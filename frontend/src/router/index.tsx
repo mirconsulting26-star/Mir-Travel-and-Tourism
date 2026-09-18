@@ -5,6 +5,7 @@ import { Footer } from '../components/layout/Footer';
 import { MobileNav } from '../components/layout/MobileNav';
 import { AdminLayout } from '../components/layout/AdminLayout';
 import { useAuth } from '../context/AuthContext';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 // Public Pages
 import { Home } from '../pages/Home';
@@ -49,8 +50,8 @@ export const AppRouter: React.FC = () => {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-      <Route path="/flights" element={<PublicLayout><Flights /></PublicLayout>} />
-      <Route path="/hotels" element={<PublicLayout><Hotels /></PublicLayout>} />
+      <Route path="/flights" element={<PublicLayout><ErrorBoundary><Flights /></ErrorBoundary></PublicLayout>} />
+      <Route path="/hotels" element={<PublicLayout><ErrorBoundary><Hotels /></ErrorBoundary></PublicLayout>} />
       <Route path="/tours" element={<PublicLayout><Tours /></PublicLayout>} />
       <Route path="/tours/:slug" element={<PublicLayout><TourDetail /></PublicLayout>} />
       <Route path="/destinations" element={<PublicLayout><Destinations /></PublicLayout>} />

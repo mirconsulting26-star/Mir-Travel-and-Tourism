@@ -19,6 +19,16 @@ export const Flights: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<FlightOffer | null>(null);
 
+  // Helper to safely format ISO/HH:MM timestamps
+  const formatTime = (timeStr?: string) => {
+    if (!timeStr) return '--:--';
+    if (timeStr.includes('T')) {
+      const parts = timeStr.split('T');
+      return parts[1] ? parts[1].substring(0, 5) : timeStr;
+    }
+    return timeStr.substring(0, 5);
+  };
+
   // Filter States
   const [maxPriceFilter, setMaxPriceFilter] = useState<number>(1000);
   const [stopsFilter, setStopsFilter] = useState<string>('ALL');
@@ -193,54 +203,58 @@ export const Flights: React.FC = () => {
               No flights found matching your filter criteria. Try expanding search parameters.
             </div>
           ) : (
-            filteredOffers.map((offer) => (
-              <div key={offer.offer_id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all space-y-4">
-                
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-sm">
-                      {offer.outbound_segments[0].airline_code}
+            filteredOffers.map((offer) => {
+              const firstSegment = offer.outbound_segments && offer.outbound_segments.length > 0 ? offer.outbound_segments[0] : null;
+              const lastSegment = offer.outbound_segments && offer.outbound_segments.length > 0 ? offer.outbound_segments[offer.outbound_segments.length - 1] : null;
+
+              return (
+                <div key={offer.offer_id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all space-y-4">
+                  
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-sm">
+                        {firstSegment?.airline_code || 'FL'}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-base">{firstSegment?.airline_name || 'Airline Partner'}</h4>
+                        <span className="text-xs text-slate-500">{offer.fare_class} • Flight {firstSegment?.flight_number || ''}</span>
+                      </div>
                     </div>
+
+                    <div className="text-left sm:text-right">
+                      <span className="text-2xl font-extrabold text-slate-900">€{offer.price}</span>
+                      <span className="block text-[10px] text-slate-400">Total for {passengers} traveller(s)</span>
+                    </div>
+                  </div>
+
+                  {/* Segment timeline */}
+                  <div className="flex items-center justify-between py-2 text-xs">
                     <div>
-                      <h4 className="font-bold text-slate-900 text-base">{offer.outbound_segments[0].airline_name}</h4>
-                      <span className="text-xs text-slate-500">{offer.fare_class} • Flight {offer.outbound_segments[0].flight_number}</span>
+                      <span className="font-bold text-slate-900 text-sm block">
+                        {formatTime(firstSegment?.departure_time)}
+                      </span>
+                      <span className="text-slate-500">{firstSegment?.departure_airport || origin}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {Math.floor((offer.total_duration_minutes || 0) / 60)}h {(offer.total_duration_minutes || 0) % 60}m
+                      </span>
+                      <div className="w-24 h-0.5 bg-slate-200 relative flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-amber-500" />
+                      </div>
+                      <span className="text-[10px] font-semibold text-slate-600">
+                        {offer.stops === 0 ? 'Direct Flight' : `${offer.stops || 1} Stop`}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="font-bold text-slate-900 text-sm block">
+                        {formatTime(lastSegment?.arrival_time)}
+                      </span>
+                      <span className="text-slate-500">{lastSegment?.arrival_airport || destination}</span>
                     </div>
                   </div>
-
-                  <div className="text-left sm:text-right">
-                    <span className="text-2xl font-extrabold text-slate-900">€{offer.price}</span>
-                    <span className="block text-[10px] text-slate-400">Total for {passengers} traveller(s)</span>
-                  </div>
-                </div>
-
-                {/* Segment timeline */}
-                <div className="flex items-center justify-between py-2 text-xs">
-                  <div>
-                    <span className="font-bold text-slate-900 text-sm block">
-                      {offer.outbound_segments[0].departure_time.split('T')[1].substring(0, 5)}
-                    </span>
-                    <span className="text-slate-500">{offer.outbound_segments[0].departure_airport}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {Math.floor(offer.total_duration_minutes / 60)}h {offer.total_duration_minutes % 60}m
-                    </span>
-                    <div className="w-24 h-0.5 bg-slate-200 relative flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-amber-500" />
-                    </div>
-                    <span className="text-[10px] font-semibold text-slate-600">
-                      {offer.stops === 0 ? 'Direct Flight' : `${offer.stops} Stop`}
-                    </span>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="font-bold text-slate-900 text-sm block">
-                      {offer.outbound_segments[offer.outbound_segments.length - 1].arrival_time.split('T')[1].substring(0, 5)}
-                    </span>
-                    <span className="text-slate-500">{offer.outbound_segments[offer.outbound_segments.length - 1].arrival_airport}</span>
-                  </div>
-                </div>
 
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-4 text-xs text-slate-600">
@@ -260,7 +274,8 @@ export const Flights: React.FC = () => {
                 </div>
 
               </div>
-            ))
+              );
+            })
           )}
         </div>
 
