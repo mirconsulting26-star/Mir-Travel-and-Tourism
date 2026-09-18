@@ -9,14 +9,13 @@ export const Footer: React.FC = () => {
         
         {/* Brand Column */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-bold text-xl">
-              M
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white font-serif">
-              MIR <span className="text-amber-500 font-sans font-normal">Travel</span>
-            </span>
-          </div>
+          <Link to="/" className="inline-block bg-white/95 p-2 rounded-xl max-w-[210px] shadow-md hover:opacity-95 transition-opacity">
+            <img
+              src="/logo.png"
+              alt="MIR Travel & Tourism"
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
           <p className="text-sm leading-relaxed text-slate-400">
             Your trusted Spanish travel agency specializing in luxury Mediterranean tours, bespoke flight itineraries, handpicked hotel stays, and authentic cultural experiences.
           </p>

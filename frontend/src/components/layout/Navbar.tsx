@@ -36,18 +36,12 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 flex items-center justify-center text-slate-900 font-bold text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            M
-          </div>
-          <div>
-            <span className={`text-xl font-bold tracking-tight font-serif ${scrolled ? 'text-slate-900' : 'text-white'}`}>
-              MIR <span className="text-amber-500 font-sans font-normal">Travel</span>
-            </span>
-            <span className={`block text-[10px] tracking-widest uppercase font-medium ${scrolled ? 'text-slate-500' : 'text-slate-300'}`}>
-              & Tourism Spain
-            </span>
-          </div>
+        <Link to="/" className="flex items-center group">
+          <img
+            src="/logo.png"
+            alt="MIR Travel & Tourism"
+            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow"
+          />
         </Link>
 
         {/* Desktop Navigation */}

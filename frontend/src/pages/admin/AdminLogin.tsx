@@ -30,12 +30,15 @@ export const AdminLogin: React.FC = () => {
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl max-w-md w-full space-y-6 shadow-2xl text-white">
         
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-slate-950 font-bold text-2xl mx-auto shadow-lg shadow-amber-500/20">
-            M
+        <div className="text-center space-y-3">
+          <div className="bg-white/95 p-3 rounded-2xl max-w-[240px] mx-auto shadow-lg">
+            <img
+              src="/logo.png"
+              alt="MIR Travel & Tourism"
+              className="h-14 w-auto object-contain mx-auto"
+            />
           </div>
-          <h1 className="text-2xl font-bold font-serif">MIR Travel Desk</h1>
-          <p className="text-xs text-slate-400">Authorized Staff & Admin Portal Authentication</p>
+          <p className="text-xs text-slate-400 font-medium">Authorized Staff & Admin Portal Authentication</p>
         </div>
 
         {error && (

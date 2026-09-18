@@ -45,16 +45,17 @@ export const AdminLayout: React.FC = () => {
       <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col shrink-0">
         
         {/* Brand Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-          <Link to="/admin" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-bold text-lg">
-              M
-            </div>
-            <div>
-              <span className="font-bold text-white text-base font-serif block leading-tight">MIR Travel Desk</span>
-              <span className="text-[10px] text-amber-500 font-mono tracking-widest uppercase">Admin Portal</span>
-            </div>
+        <div className="p-5 border-b border-slate-800">
+          <Link to="/admin" className="block bg-white/95 p-2 rounded-xl shadow-md hover:opacity-95 transition-opacity">
+            <img
+              src="/logo.png"
+              alt="MIR Travel & Tourism"
+              className="h-10 w-auto object-contain mx-auto"
+            />
           </Link>
+          <div className="mt-2 text-center">
+            <span className="text-[10px] text-amber-500 font-mono tracking-widest uppercase font-bold">Admin & Staff Portal</span>
+          </div>
         </div>
 
         {/* Navigation Items */}
