@@ -14,7 +14,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MONGODB_URI
-        sync: false
+        value: "mongodb+srv://mirconsulting26_db_user:HHRaJBTryQBuSy0f@mir-consulting-database.yoq7moa.mongodb.net/?appName=Mir-Consulting-Database"
       - key: MONGODB_DB
         value: mir_travel_db
       - key: FRONTEND_URL

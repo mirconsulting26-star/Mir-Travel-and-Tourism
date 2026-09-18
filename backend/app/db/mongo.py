@@ -13,8 +13,14 @@ db_instance = MongoDatabase()
 
 async def connect_to_mongo():
     try:
-        logger.info(f"Connecting to MongoDB at {settings.MONGODB_URI}...")
-        db_instance.client = AsyncIOMotorClient(settings.MONGODB_URI)
+        # Mask credentials for safe logging
+        sanitized_uri = settings.MONGODB_URI.split("@")[-1] if "@" in settings.MONGODB_URI else settings.MONGODB_URI
+        logger.info(f"Connecting to MongoDB at {sanitized_uri}...")
+        db_instance.client = AsyncIOMotorClient(
+            settings.MONGODB_URI,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=5000
+        )
         db_instance.db = db_instance.client[settings.MONGODB_DB]
         
         # Test connection ping
@@ -24,7 +30,14 @@ async def connect_to_mongo():
         # Ensure collection indexes
         await init_db_indexes()
     except Exception as e:
-        logger.warning(f"Could not connect to MongoDB ({e}). Falling back to mock/in-memory mode if DB is unreachable.")
+        logger.warning(f"Could not connect to MongoDB ({e}). Falling back to mock/in-memory mode.")
+        if db_instance.client:
+            try:
+                db_instance.client.close()
+            except Exception:
+                pass
+        db_instance.client = None
+        db_instance.db = None
 
 async def close_mongo_connection():
     if db_instance.client:

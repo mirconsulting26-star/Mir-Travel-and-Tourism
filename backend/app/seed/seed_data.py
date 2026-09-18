@@ -7,12 +7,7 @@ from app.db.mongo import get_db, connect_to_mongo
 
 logger = logging.getLogger(__name__)
 
-async def seed_database():
-    db = get_db()
-    if db is None:
-        logger.warning("Database connection unavailable. Skipping DB seed.")
-        return
-
+async def _do_seed(db):
     # 1. Admin Superuser
     admin_email = settings.ADMIN_BOOTSTRAP_EMAIL
     admin_exists = await db.admin_users.find_one({"email": admin_email})
@@ -192,6 +187,16 @@ async def seed_database():
         ]
         await db.blog_posts.insert_many(blog_posts)
         logger.info("Seeded demo blog post.")
+
+async def seed_database():
+    db = get_db()
+    if db is None:
+        logger.warning("Database connection unavailable. Skipping DB seed.")
+        return
+    try:
+        await _do_seed(db)
+    except Exception as e:
+        logger.error(f"Error during database seed: {e}")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
     
-    MONGODB_URI: str = "mongodb://localhost:27017"
+    MONGODB_URI: str = "mongodb+srv://mirconsulting26_db_user:HHRaJBTryQBuSy0f@mir-consulting-database.yoq7moa.mongodb.net/?appName=Mir-Consulting-Database"
     MONGODB_DB: str = "mir_travel_db"
     
     FRONTEND_URL: str = "http://localhost:5173"
