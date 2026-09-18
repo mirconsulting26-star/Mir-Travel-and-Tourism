@@ -1,0 +1,41 @@
+services:
+  # FastAPI Web Service
+  - type: web
+    name: mir-travel-backend
+    env: python
+    region: frankfurt
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: mir_travel_db
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: "https://mir-travel-frontend.onrender.com"
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        value: admin@mirtravel.es
+      - key: ADMIN_BOOTSTRAP_PASSWORD
+        sync: false
+
+  # React Static Site
+  - type: static
+    name: mir-travel-frontend
+    env: static
+    buildCommand: "cd frontend && npm ci && npm run build"
+    staticPublishPath: "./frontend/dist"
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: "https://mir-travel-backend.onrender.com/api/v1"
