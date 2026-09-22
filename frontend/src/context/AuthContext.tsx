@@ -20,14 +20,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchMe = async () => {
       if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      // Login already populated the user; don't immediately bounce the session.
+      if (user) {
         setLoading(false);
         return;
       }
       try {
         const res = await apiClient.get('/auth/me');
-        setUser(res.data);
+        if (res.data && typeof res.data === 'object' && res.data.email) {
+          setUser(res.data);
+        } else {
+          setUser(null);
+          setToken(null);
+          localStorage.removeItem('mir_access_token');
+        }
       } catch (err) {
         console.error('Failed to authenticate token:', err);
+        setUser(null);
         setToken(null);
         localStorage.removeItem('mir_access_token');
       } finally {
@@ -35,14 +48,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     fetchMe();
-  }, [token]);
+  }, [token, user]);
 
   const login = async (email: string, pass: string) => {
-    const res = await apiClient.post('/auth/login', { email, password: pass });
-    const { access_token, user: loggedUser } = res.data;
+    const res = await apiClient.post('/auth/login', {
+      email: email.trim(),
+      password: pass,
+    });
+    const access_token = res.data?.access_token;
+    const loggedUser = res.data?.user;
+    if (!access_token || !loggedUser?.email) {
+      throw new Error('Login succeeded but the API returned an unexpected response.');
+    }
+    localStorage.setItem('mir_access_token', access_token);
     setToken(access_token);
     setUser(loggedUser);
-    localStorage.setItem('mir_access_token', access_token);
   };
 
   const logout = () => {

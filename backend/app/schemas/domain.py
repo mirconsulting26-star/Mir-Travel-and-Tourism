@@ -21,7 +21,7 @@ class UserResponse(UserBase):
     created_at: str
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 class TokenResponse(BaseModel):

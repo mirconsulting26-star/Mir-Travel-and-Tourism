@@ -39,9 +39,15 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 );
 
 const ProtectedAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Authenticating...</div>;
-  if (!user) return <Navigate to="/admin/login" replace />;
+  const { user, token, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        Authenticating...
+      </div>
+    );
+  }
+  if (!user || !token) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 };
 

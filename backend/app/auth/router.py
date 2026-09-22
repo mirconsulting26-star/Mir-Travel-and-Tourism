@@ -51,8 +51,14 @@ async def login(req: LoginRequest):
     user_data = None
     
     if db is not None:
-        user_doc = await db.admin_users.find_one({"email": req.email})
-        if user_doc and verify_password(req.password, user_doc["password_hash"]):
+        user_doc = await db.admin_users.find_one({"email": req.email.strip().lower()})
+        password_ok = False
+        if user_doc:
+            try:
+                password_ok = verify_password(req.password, user_doc["password_hash"])
+            except Exception:
+                password_ok = False
+        if user_doc and password_ok:
             user_data = UserResponse(
                 id=str(user_doc["_id"]),
                 email=user_doc["email"],
@@ -63,7 +69,11 @@ async def login(req: LoginRequest):
             )
             
     # Bootstrap user fallback verification
-    if not user_data and req.email == settings.ADMIN_BOOTSTRAP_EMAIL and req.password == settings.ADMIN_BOOTSTRAP_PASSWORD:
+    if (
+        not user_data
+        and req.email.strip().lower() == settings.ADMIN_BOOTSTRAP_EMAIL.lower()
+        and req.password == settings.ADMIN_BOOTSTRAP_PASSWORD
+    ):
         user_data = UserResponse(
             id="usr_admin_bootstrap",
             email=settings.ADMIN_BOOTSTRAP_EMAIL,

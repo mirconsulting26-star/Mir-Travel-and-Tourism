@@ -78,33 +78,38 @@ export const Home: React.FC = () => {
           </div>
 
           {/* SEARCH BOX SWITCHER CARD */}
-          <div className="glass-panel text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/40 max-w-4xl">
+          <div className="glass-panel text-slate-900 rounded-3xl p-4 sm:p-8 shadow-2xl border border-white/40 max-w-4xl overflow-hidden">
             
             {/* Tabs Header */}
-            <div className="flex items-center gap-3 border-b border-slate-200 pb-4 mb-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 border-b border-slate-200 pb-4 mb-6">
               <button
+                type="button"
                 onClick={() => setActiveTab('flights')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all ${
                   activeTab === 'flights' ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Plane className="w-4 h-4" /> Flights
+                <Plane className="w-4 h-4 shrink-0" /> Flights
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('hotels')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all ${
                   activeTab === 'hotels' ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Building2 className="w-4 h-4" /> Hotels
+                <Building2 className="w-4 h-4 shrink-0" /> Hotels
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('tours')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all ${
                   activeTab === 'tours' ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Compass className="w-4 h-4" /> Tours & Packages
+                <Compass className="w-4 h-4 shrink-0" />
+                <span className="sm:hidden">Tours</span>
+                <span className="hidden sm:inline">Tours &amp; Packages</span>
               </button>
             </div>
 

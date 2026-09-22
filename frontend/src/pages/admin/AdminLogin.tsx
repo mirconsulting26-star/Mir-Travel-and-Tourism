@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
+import { formatApiError } from '../../api/client';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
 
 export const AdminLogin: React.FC = () => {
   const { login } = useAuth();
@@ -14,13 +15,14 @@ export const AdminLogin: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setError('');
     setLoading(true);
     try {
       await login(email, password);
-      navigate('/admin');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid login credentials');
+      navigate('/admin', { replace: true });
+    } catch (err: unknown) {
+      setError(formatApiError(err, 'Invalid login credentials'));
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export const AdminLogin: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Staff Email</label>
             <div className="relative">
