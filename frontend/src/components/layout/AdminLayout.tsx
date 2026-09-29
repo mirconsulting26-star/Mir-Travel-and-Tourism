@@ -46,11 +46,11 @@ export const AdminLayout: React.FC = () => {
         
         {/* Brand Header */}
         <div className="p-5 border-b border-slate-800">
-          <Link to="/admin" className="block bg-white/95 p-2 rounded-xl shadow-md hover:opacity-95 transition-opacity">
+          <Link to="/admin" className="block hover:opacity-90 transition-opacity">
             <img
               src="/logo.png"
               alt="MIR Travel & Tourism"
-              className="h-10 w-auto object-contain mx-auto"
+              className="h-11 w-auto object-contain mx-auto"
             />
           </Link>
           <div className="mt-2 text-center">

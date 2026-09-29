@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
         
         {/* Brand Column */}
         <div className="space-y-4">
-          <Link to="/" className="inline-block bg-white/95 p-2 rounded-xl max-w-[210px] shadow-md hover:opacity-95 transition-opacity">
+          <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
             <img
               src="/logo.png"
               alt="MIR Travel & Tourism"

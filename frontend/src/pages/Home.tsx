@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
     <div className="space-y-24 pb-20">
       
       {/* HERO SECTION WITH SEARCH SWITCHER */}
-      <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 bg-slate-950 text-white overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center pt-28 sm:pt-32 pb-16 bg-slate-950 text-white overflow-hidden">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity scale-105 transition-transform duration-1000"
