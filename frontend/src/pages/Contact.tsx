@@ -10,22 +10,25 @@ export const Contact: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center">
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center shadow-sm">
           <MapPin className="w-8 h-8 text-amber-500 mx-auto" />
-          <h3 className="font-bold text-slate-900 font-serif">Main Office</h3>
-          <p className="text-xs text-slate-500">Paseo Marítimo 45, 03502 Benidorm, Alicante, Spain</p>
+          <h3 className="font-bold text-slate-900 font-serif">Office Location</h3>
+          <p className="text-xs font-semibold text-amber-600 bg-amber-50 py-1 px-3 rounded-full inline-block">Updating soon</p>
+          <p className="text-xs text-slate-500">Official office location is being finalized.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center">
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center shadow-sm">
           <Phone className="w-8 h-8 text-amber-500 mx-auto" />
           <h3 className="font-bold text-slate-900 font-serif">Telephone</h3>
-          <p className="text-xs text-slate-500">+34 965 800 123</p>
+          <p className="text-xs font-semibold text-amber-600 bg-amber-50 py-1 px-3 rounded-full inline-block">Updating soon</p>
+          <p className="text-xs text-slate-500">Direct phone line details will be published shortly.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center">
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 space-y-3 text-center shadow-sm">
           <Mail className="w-8 h-8 text-amber-500 mx-auto" />
           <h3 className="font-bold text-slate-900 font-serif">Email Enquiries</h3>
-          <p className="text-xs text-slate-500">info@mirtravel.es</p>
+          <p className="text-xs font-semibold text-amber-600 bg-amber-50 py-1 px-3 rounded-full inline-block">Updating soon</p>
+          <p className="text-xs text-slate-500">Official contact email channel is being configured.</p>
         </div>
       </div>
     </div>

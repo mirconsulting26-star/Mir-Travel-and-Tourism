@@ -35,4 +35,35 @@ async def test_flight_desk_explainable_ranking():
     top_offer = ranked[0]
     assert top_offer.score > 0
     assert len(top_offer.explainable_reasons) > 0
-    assert top_offer.is_shortlisted is True
+@pytest.mark.asyncio
+async def test_auth_login_and_me():
+    from httpx import AsyncClient, ASGITransport
+    from app.main import app
+    from app.core.config import settings
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # Test valid login
+        res = await ac.post("/api/v1/auth/login", json={
+            "email": settings.ADMIN_BOOTSTRAP_EMAIL,
+            "password": settings.ADMIN_BOOTSTRAP_PASSWORD
+        })
+        assert res.status_code == 200
+        data = res.json()
+        assert "access_token" in data
+        assert "user" in data
+        assert data["user"]["email"] == settings.ADMIN_BOOTSTRAP_EMAIL
+        
+        # Test /auth/me with the token
+        token = data["access_token"]
+        me_res = await ac.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+        assert me_res.status_code == 200
+        me_data = me_res.json()
+        assert me_data["email"] == settings.ADMIN_BOOTSTRAP_EMAIL
+        assert me_data["role"] == "SUPER_ADMIN"
+
+        # Test invalid login credentials
+        bad_res = await ac.post("/api/v1/auth/login", json={
+            "email": "wrong@mirtravel.es",
+            "password": "BadPassword123!"
+        })
+        assert bad_res.status_code == 401

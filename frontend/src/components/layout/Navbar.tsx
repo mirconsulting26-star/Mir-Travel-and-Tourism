@@ -36,12 +36,14 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center group">
-          <img
-            src="/logo.png"
-            alt="MIR Travel & Tourism"
-            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow"
-          />
+        <Link to="/" className="flex items-center group py-0.5">
+          <div className="bg-white/95 px-3 py-1.5 rounded-2xl shadow-md border border-white/20 transition-transform group-hover:scale-105 flex items-center">
+            <img
+              src="/logo.png"
+              alt="MIR Travel & Tourism"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain drop-shadow-sm"
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

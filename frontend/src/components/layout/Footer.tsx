@@ -55,15 +55,15 @@ export const Footer: React.FC = () => {
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-              <span>Paseo Marítimo 45, 03502 Benidorm, Alicante, Spain</span>
+              <span>Office Location: <span className="text-amber-400 font-medium">Updating soon</span></span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-amber-500 shrink-0" />
-              <span>+34 965 800 123</span>
+              <span>Phone: <span className="text-amber-400 font-medium">Updating soon</span></span>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-amber-500 shrink-0" />
-              <span>info@mirtravel.es</span>
+              <span>Email: <span className="text-amber-400 font-medium">Updating soon</span></span>
             </li>
           </ul>
 
