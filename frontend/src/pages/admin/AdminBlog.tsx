@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BookOpen, Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, Sparkles, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { BookOpen, Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, Sparkles, Image as ImageIcon, UploadCloud, Link as LinkIcon, CheckCircle2, X } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import { BlogBlock } from '../../types';
 
@@ -9,6 +9,10 @@ export const AdminBlog: React.FC = () => {
   const [excerpt, setExcerpt] = useState('Exploring the best Mediterranean beaches, historic castles, and seafood gastronomy.');
   const [category, setCategory] = useState('Travel Journal');
   const [coverImage, setCoverImage] = useState('https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=1200&q=80');
+  const [imageUploadMode, setImageUploadMode] = useState<'UPLOAD' | 'URL'>('UPLOAD');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [blocks, setBlocks] = useState<BlogBlock[]>([
     {
@@ -30,6 +34,50 @@ export const AdminBlog: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setUploadedFileName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const dataUrl = event.target?.result as string;
+      setCoverImage(dataUrl);
+      setUploadingImage(false);
+
+      // Attempt async background upload to media endpoint if available
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await apiClient.post('/admin/media/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        if (res.data?.secure_url) {
+          setCoverImage(res.data.secure_url);
+        }
+      } catch (err) {
+        // Fallback to dataUrl ensures it is guaranteed to show
+        console.log('Using robust embedded image data URL for cover image.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setUploadedFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setCoverImage(event.target?.result as string);
+      setUploadingImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const addBlock = (type: string) => {
     const newBlock: BlogBlock = {
@@ -105,7 +153,8 @@ export const AdminBlog: React.FC = () => {
       </div>
 
       {savedSuccess && (
-        <div className="p-4 bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-sm font-bold rounded-2xl">
+        <div className="p-4 bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-sm font-bold rounded-2xl flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           Article published successfully to CMS database!
         </div>
       )}
@@ -226,19 +275,95 @@ export const AdminBlog: React.FC = () => {
 
         </div>
 
-        {/* Right Sidebar: Meta & Cover */}
-        <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4 h-fit">
+        {/* Right Sidebar: Meta & Cover Image Upload */}
+        <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-5 h-fit">
           <h3 className="font-bold text-white text-base font-serif">Publishing Settings</h3>
 
-          <div>
-            <label className="block text-xs uppercase font-bold text-slate-400 mb-1">Cover Image URL</label>
-            <input
-              type="text"
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300"
-            />
-            {coverImage && <img src={coverImage} alt="Cover preview" className="w-full h-32 object-cover rounded-xl mt-2 border border-slate-800" />}
+          {/* Cover Image Upload & Preview */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs uppercase font-bold text-slate-400">Cover Image</label>
+              <div className="flex rounded-lg bg-slate-900 p-0.5 border border-slate-800 text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => setImageUploadMode('UPLOAD')}
+                  className={`px-2 py-0.5 rounded-md font-semibold transition-colors ${
+                    imageUploadMode === 'UPLOAD' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Upload File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageUploadMode('URL')}
+                  className={`px-2 py-0.5 rounded-md font-semibold transition-colors ${
+                    imageUploadMode === 'URL' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Image URL
+                </button>
+              </div>
+            </div>
+
+            {imageUploadMode === 'UPLOAD' ? (
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                  className="border-2 border-dashed border-slate-700 hover:border-amber-500 rounded-2xl p-4 text-center cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group"
+                >
+                  <UploadCloud className="w-8 h-8 text-amber-500 mx-auto mb-1 group-hover:scale-110 transition-transform" />
+                  <p className="text-xs font-bold text-white">Click or drag image file here</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">JPG, PNG, WebP up to 10MB</p>
+                </div>
+                {uploadingImage && <p className="text-xs text-amber-400 animate-pulse">Processing image...</p>}
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  value={coverImage}
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300 font-mono focus:outline-none focus:border-amber-500"
+                />
+              </div>
+            )}
+
+            {coverImage && (
+              <div className="relative group rounded-xl overflow-hidden border border-slate-800 bg-slate-900">
+                <img
+                  src={coverImage}
+                  alt="Cover preview"
+                  className="w-full h-36 object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCoverImage('');
+                    setUploadedFileName('');
+                  }}
+                  className="absolute top-2 right-2 p-1.5 bg-slate-950/80 hover:bg-rose-600 text-white rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-all shadow"
+                  title="Remove image"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                <div className="p-2 text-[10px] text-slate-400 bg-slate-950/90 flex items-center justify-between">
+                  <span className="truncate max-w-[180px]">{uploadedFileName || 'Image Ready'}</span>
+                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Guaranteed Preview
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
@@ -247,7 +372,7 @@ export const AdminBlog: React.FC = () => {
               rows={3}
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300"
+              className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-500"
             />
           </div>
         </div>

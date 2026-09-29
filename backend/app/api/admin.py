@@ -163,8 +163,46 @@ async def create_hotel(
     await log_audit_action(current_user.email, "CREATE", "HOTEL", f"Added hotel {req.name}")
     return doc
 
+@router.delete("/hotels/{hotel_id}")
+async def delete_hotel(
+    hotel_id: str,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    if db is not None:
+        await db.hotels.delete_one({"_id": ObjectId(hotel_id)})
+    await log_audit_action(current_user.email, "DELETE", "HOTEL", f"Deleted hotel {hotel_id}")
+    return {"status": "deleted", "id": hotel_id}
+
 
 # --- TOURS CRUD ---
+@router.get("/tours", response_model=List[TourResponse])
+async def list_admin_tours(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.tours.find()
+        tours = []
+        async for doc in cursor:
+            doc_id = str(doc["_id"])
+            dep_cursor = db.tour_departures.find({"tour_id": doc_id})
+            deps = []
+            async for dep in dep_cursor:
+                deps.append({
+                    "id": str(dep["_id"]),
+                    "tour_id": dep["tour_id"],
+                    "start_date": dep["start_date"],
+                    "end_date": dep["end_date"],
+                    "total_seats": dep["total_seats"],
+                    "available_seats": dep["available_seats"],
+                    "price": dep["price"],
+                    "status": dep.get("status", "AVAILABLE")
+                })
+            doc["id"] = doc_id
+            doc["departures"] = deps
+            tours.append(doc)
+        return tours
+    return []
+
 @router.post("/tours", response_model=TourResponse)
 async def create_tour(
     req: TourCreate,
@@ -188,14 +226,121 @@ async def create_tour(
             
         doc["id"] = tour_id
         doc["departures"] = seeded_deps
+        await log_audit_action(current_user.email, "CREATE", "TOUR", f"Created tour {req.title}")
         return doc
         
     doc["id"] = f"tour_{uuid.uuid4().hex[:8]}"
     doc["departures"] = []
     return doc
 
+@router.delete("/tours/{tour_id}")
+async def delete_tour(
+    tour_id: str,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    if db is not None:
+        await db.tours.delete_one({"_id": ObjectId(tour_id)})
+        await db.tour_departures.delete_many({"tour_id": tour_id})
+    await log_audit_action(current_user.email, "DELETE", "TOUR", f"Deleted tour {tour_id}")
+    return {"status": "deleted", "id": tour_id}
+
+
+# --- DESTINATIONS CRUD ---
+@router.get("/destinations", response_model=List[DestinationResponse])
+async def list_admin_destinations(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.destinations.find()
+        dests = []
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            dests.append(doc)
+        return dests
+    return []
+
+@router.post("/destinations", response_model=DestinationResponse)
+async def create_destination(
+    req: DestinationCreate,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    doc = req.dict()
+    doc["created_at"] = datetime.utcnow().isoformat()
+    if db is not None:
+        res = await db.destinations.insert_one(doc)
+        doc["id"] = str(res.inserted_id)
+    else:
+        doc["id"] = f"dest_{uuid.uuid4().hex[:8]}"
+    await log_audit_action(current_user.email, "CREATE", "DESTINATION", f"Created destination {req.name}")
+    return doc
+
+@router.delete("/destinations/{dest_id}")
+async def delete_destination(
+    dest_id: str,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    if db is not None:
+        await db.destinations.delete_one({"_id": ObjectId(dest_id)})
+    await log_audit_action(current_user.email, "DELETE", "DESTINATION", f"Deleted destination {dest_id}")
+    return {"status": "deleted", "id": dest_id}
+
+
+# --- EVENTS CMS ---
+@router.get("/events", response_model=List[EventResponse])
+async def list_admin_events(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.events.find()
+        events = []
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            events.append(doc)
+        return events
+    return []
+
+@router.post("/events", response_model=EventResponse)
+async def create_event(
+    req: EventCreate,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    doc = req.dict()
+    doc["created_at"] = datetime.utcnow().isoformat()
+    if db is not None:
+        res = await db.events.insert_one(doc)
+        doc["id"] = str(res.inserted_id)
+    else:
+        doc["id"] = f"event_{uuid.uuid4().hex[:8]}"
+    await log_audit_action(current_user.email, "CREATE", "EVENT", f"Created event {req.title}")
+    return doc
+
+@router.delete("/events/{event_id}")
+async def delete_event(
+    event_id: str,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    if db is not None:
+        await db.events.delete_one({"_id": ObjectId(event_id)})
+    await log_audit_action(current_user.email, "DELETE", "EVENT", f"Deleted event {event_id}")
+    return {"status": "deleted", "id": event_id}
+
 
 # --- BLOG CMS ---
+@router.get("/blog", response_model=List[BlogPostResponse])
+async def list_admin_blog_posts(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.blog_posts.find().sort("created_at", -1)
+        posts = []
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            posts.append(doc)
+        return posts
+    return []
+
 @router.post("/blog", response_model=BlogPostResponse)
 async def create_blog_post(
     req: BlogPostCreate,
@@ -212,8 +357,100 @@ async def create_blog_post(
     await log_audit_action(current_user.email, "CREATE", "BLOG", f"Created post {req.title}")
     return doc
 
+@router.delete("/blog/{post_id}")
+async def delete_blog_post(
+    post_id: str,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    if db is not None:
+        await db.blog_posts.delete_one({"_id": ObjectId(post_id)})
+    await log_audit_action(current_user.email, "DELETE", "BLOG", f"Deleted blog post {post_id}")
+    return {"status": "deleted", "id": post_id}
 
-# --- MEDIA UPLOADER ---
+
+# --- BOOKINGS & ORDERS ---
+@router.get("/bookings")
+async def list_admin_bookings(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.orders.find().sort("created_at", -1)
+        orders = []
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            orders.append(doc)
+        return orders
+    return []
+
+
+# --- CUSTOMERS ---
+@router.get("/customers", response_model=List[CustomerResponse])
+async def list_admin_customers(current_user: UserResponse = Depends(get_current_user)):
+    db = get_db()
+    if db is not None:
+        cursor = db.customers.find().sort("created_at", -1)
+        customers = []
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            customers.append(doc)
+        return customers
+    return []
+
+@router.post("/customers", response_model=CustomerResponse)
+async def create_customer(
+    req: CustomerCreate,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    db = get_db()
+    doc = req.dict()
+    doc["created_at"] = datetime.utcnow().isoformat()
+    if db is not None:
+        res = await db.customers.insert_one(doc)
+        doc["id"] = str(res.inserted_id)
+    else:
+        doc["id"] = f"cust_{uuid.uuid4().hex[:8]}"
+    await log_audit_action(current_user.email, "CREATE", "CUSTOMER", f"Created customer profile {req.full_name}")
+    return doc
+
+
+# --- MEDIA LIBRARY & UPLOADER ---
+@router.get("/media")
+async def list_cms_media(current_user: UserResponse = Depends(get_current_user)):
+    return [
+        {
+            "id": "med_1",
+            "url": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=1200&q=80",
+            "title": "Benidorm Beachfront Horizon",
+            "format": "JPEG",
+            "size": "420 KB",
+            "created_at": "2026-09-28T10:00:00Z"
+        },
+        {
+            "id": "med_2",
+            "url": "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1200&q=80",
+            "title": "Barcelona Gothic Quarter & Cathedral",
+            "format": "JPEG",
+            "size": "580 KB",
+            "created_at": "2026-09-28T11:30:00Z"
+        },
+        {
+            "id": "med_3",
+            "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+            "title": "Benidorm Fest Concert Stage",
+            "format": "JPEG",
+            "size": "390 KB",
+            "created_at": "2026-09-29T14:15:00Z"
+        },
+        {
+            "id": "med_4",
+            "url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+            "title": "Gran Hotel Sol y Mar Resort",
+            "format": "JPEG",
+            "size": "510 KB",
+            "created_at": "2026-09-29T16:40:00Z"
+        }
+    ]
+
 @router.post("/media/upload")
 async def upload_cms_media(
     file: UploadFile = File(...),

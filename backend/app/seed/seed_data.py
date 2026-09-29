@@ -188,6 +188,241 @@ async def _do_seed(db):
         await db.blog_posts.insert_many(blog_posts)
         logger.info("Seeded demo blog post.")
 
+    # 6. Demo Events CMS
+    event_count = await db.events.count_documents({})
+    if event_count == 0:
+        events = [
+            {
+                "title": "Benidorm Fest & Mediterranean Music Showcase",
+                "slug": "benidorm-fest-music-showcase",
+                "summary": "Spain's premier musical competition and cultural festival drawing artists across Europe.",
+                "description": "Benidorm Fest is Spain's most celebrated modern music festival, bringing vibrant concerts, open-air beach performances, and cultural showcases along the Mediterranean boardwalk.",
+                "location": "Palau d'Esports l'Illa, Benidorm, Alicante",
+                "event_date": "2026-10-20 to 2026-10-25",
+                "cover_image": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+                "gallery": [
+                    "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80"
+                ],
+                "status": "PUBLISHED",
+                "is_featured": True,
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "title": "Hogueras de San Juan (Alicante Midsummer Fire Festival)",
+                "slug": "hogueras-de-san-juan-alicante",
+                "summary": "Monumental artistic bonfires, fireworks, parades, and midnight beach festivities.",
+                "description": "The official Fiesta of International Tourist Interest in Alicante. Giant satirical papier-mâché sculptures are displayed throughout city plazas before the spectacular night of the cremation with dazzling fireworks.",
+                "location": "Plaza del Ayuntamiento & Postiguet Beach, Alicante",
+                "event_date": "2026-06-20 to 2026-06-24",
+                "cover_image": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80",
+                "gallery": [
+                    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80"
+                ],
+                "status": "PUBLISHED",
+                "is_featured": True,
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "title": "Costa Blanca International Sailing Regatta",
+                "slug": "costa-blanca-sailing-regatta",
+                "summary": "Prestigious offshore yacht racing between Alicante, Altea, and Calpe marinas.",
+                "description": "Over 80 international racing yachts compete along the scenic Costa Blanca coastline with VIP spectator catamarans and dockside champagne receptions.",
+                "location": "Club Náutico Altea & Marina de Alicante",
+                "event_date": "2026-09-12 to 2026-09-16",
+                "cover_image": "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?auto=format&fit=crop&w=800&q=80",
+                "gallery": [
+                    "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?auto=format&fit=crop&w=800&q=80"
+                ],
+                "status": "PUBLISHED",
+                "is_featured": True,
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "title": "Barcelona Mediterranean Wine & Gastronomy Week",
+                "slug": "barcelona-wine-gastronomy-week",
+                "summary": "Tasting sessions from Catalonia and Priorat vineyards paired with Michelin-starred tapas.",
+                "description": "Explore curated wine pavilions, artisan olive oil masterclasses, and coastal seafood pairings in historic Barcelona venues.",
+                "location": "Fira de Barcelona & Port Vell, Barcelona",
+                "event_date": "2026-11-05 to 2026-11-09",
+                "cover_image": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
+                "gallery": [],
+                "status": "PUBLISHED",
+                "is_featured": False,
+                "created_at": datetime.utcnow().isoformat()
+            }
+        ]
+        await db.events.insert_many(events)
+        logger.info(f"Seeded {len(events)} demo events.")
+
+    # 7. Demo Hotels Directory
+    hotel_count = await db.hotels.count_documents({})
+    if hotel_count == 0:
+        hotels = [
+            {
+                "name": "Gran Hotel Sol y Mar Luxury Resort",
+                "destination": "Benidorm & Costa Blanca [DEMO]",
+                "stars": 5,
+                "rating": 4.9,
+                "address": "Calle Benidorm 1, 03710 Calpe, Alicante, Spain",
+                "image_url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+                "price_per_night": 220.0,
+                "is_preferred": True,
+                "is_active": True,
+                "amenities": ["Beachfront Infinity Pool", "Luxury Thalasso Spa", "Champagne Bar", "Private Beach Club", "Valet Parking"],
+                "cancellation_policy": "Free cancellation up to 48 hours prior to check-in.",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "name": "Hotel Boutique Villa Venecia Gourmet & Spa",
+                "destination": "Benidorm & Costa Blanca [DEMO]",
+                "stars": 5,
+                "rating": 4.95,
+                "address": "Plaza del Castillo 1, 03501 Benidorm, Alicante, Spain",
+                "image_url": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
+                "price_per_night": 280.0,
+                "is_preferred": True,
+                "is_active": True,
+                "amenities": ["Panoramic Mediterranean Balcony", "Gourmet Tasting Menu", "Hydrotherapy Spa", "Butler Service"],
+                "cancellation_policy": "Free cancellation up to 7 days before arrival.",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "name": "The Serras Barcelona Waterfront Luxury Hotel",
+                "destination": "Barcelona & Costa Brava [DEMO]",
+                "stars": 5,
+                "rating": 4.88,
+                "address": "Passeig de Colom 9, 08002 Barcelona, Spain",
+                "image_url": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
+                "price_per_night": 340.0,
+                "is_preferred": True,
+                "is_active": True,
+                "amenities": ["Rooftop Cocktail Plunge Pool", "Marina Port Vell Views", "Michelin-starred Dining", "Concierge Desk"],
+                "cancellation_policy": "Non-refundable discount or flexible rate available.",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "name": "Hospes Amérigo Luxury Heritage Hotel",
+                "destination": "Alicante & Costa Blanca",
+                "stars": 5,
+                "rating": 4.82,
+                "address": "Calle Rafael Altamira 19, 03002 Alicante, Spain",
+                "image_url": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
+                "price_per_night": 195.0,
+                "is_preferred": False,
+                "is_active": True,
+                "amenities": ["Converted 19th-century Convent", "Castle View Rooftop Bar", "Bodyna Spa", "Gourmet Tapas Bar"],
+                "cancellation_policy": "Free cancellation up to 24 hours prior to check-in.",
+                "created_at": datetime.utcnow().isoformat()
+            }
+        ]
+        await db.hotels.insert_many(hotels)
+        logger.info(f"Seeded {len(hotels)} demo hotels.")
+
+    # 8. Demo Customers
+    cust_count = await db.customers.count_documents({})
+    if cust_count == 0:
+        customers = [
+            {
+                "full_name": "Carlos Mendoza",
+                "email": "carlos.mendoza@example.com",
+                "phone": "+34 611 223 344",
+                "passport_number": "ESP-8839201A",
+                "notes": "VIP Mediterranean Tour client. Prefers window seats on Iberia flights and upper-floor hotel suites.",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "full_name": "Sophie Laurent",
+                "email": "sophie.laurent@example.fr",
+                "phone": "+33 612 345 678",
+                "passport_number": "FRA-7729103B",
+                "notes": "Interested in Costa Blanca catamaran excursions and gourmet wine tastings.",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            {
+                "full_name": "David Wilson",
+                "email": "david.wilson@example.co.uk",
+                "phone": "+44 7700 900123",
+                "passport_number": "GBR-4491029C",
+                "notes": "Corporate retreat organizer. Books small group flight desk packages.",
+                "created_at": datetime.utcnow().isoformat()
+            }
+        ]
+        await db.customers.insert_many(customers)
+        logger.info(f"Seeded {len(customers)} demo customers.")
+
+    # 9. Demo Orders / Bookings
+    order_count = await db.orders.count_documents({})
+    if order_count == 0:
+        orders = [
+            {
+                "order_id": "MIR-ORD-8F29A10C",
+                "customer_name": "Carlos Mendoza",
+                "customer_email": "carlos.mendoza@example.com",
+                "customer_phone": "+34 611 223 344",
+                "total_amount": 1780.0,
+                "currency": "EUR",
+                "status": "CONFIRMED",
+                "payment_provider": "STRIPE",
+                "items": [
+                    {
+                        "item_type": "TOUR",
+                        "item_id": "tour_demo_costa_blanca",
+                        "title": "Costa Blanca Coastal Sun & Heritage Tour (2 Guests)",
+                        "quantity": 2,
+                        "unit_price": 890.0,
+                        "details": {"duration": "7 Days", "destination": "Benidorm & Costa Blanca"}
+                    }
+                ],
+                "created_at": (datetime.utcnow() - timedelta(days=2)).isoformat()
+            },
+            {
+                "order_id": "MIR-ORD-3B71E94D",
+                "customer_name": "Sophie Laurent",
+                "customer_email": "sophie.laurent@example.fr",
+                "customer_phone": "+33 612 345 678",
+                "total_amount": 680.0,
+                "currency": "EUR",
+                "status": "CONFIRMED",
+                "payment_provider": "PAYPAL",
+                "items": [
+                    {
+                        "item_type": "HOTEL",
+                        "item_id": "hotel_the_serras",
+                        "title": "The Serras Barcelona Waterfront Luxury Hotel (2 Nights)",
+                        "quantity": 2,
+                        "unit_price": 340.0,
+                        "details": {"room": "Grand Deluxe Port View Room"}
+                    }
+                ],
+                "created_at": (datetime.utcnow() - timedelta(days=5)).isoformat()
+            }
+        ]
+        await db.orders.insert_many(orders)
+        logger.info(f"Seeded {len(orders)} demo bookings.")
+
+    # 10. Demo Audit Logs
+    audit_count = await db.audit_logs.count_documents({})
+    if audit_count == 0:
+        logs = [
+            {
+                "user_email": "admin@mirtravel.es",
+                "action": "SYSTEM_BOOTSTRAP",
+                "resource": "DATABASE",
+                "details": "Initial system initialization and demo catalogue seeded.",
+                "timestamp": (datetime.utcnow() - timedelta(hours=1)).isoformat()
+            },
+            {
+                "user_email": "admin@mirtravel.es",
+                "action": "EVALUATE_FLIGHTS",
+                "resource": "FLIGHT_DESK",
+                "details": "Ranked offers for client Carlos Mendoza (MAD -> BCN).",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        ]
+        await db.audit_logs.insert_many(logs)
+        logger.info(f"Seeded {len(logs)} audit logs.")
+
 async def seed_database():
     db = get_db()
     if db is None:
