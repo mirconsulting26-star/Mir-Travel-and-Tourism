@@ -18,9 +18,9 @@ services:
       - key: MONGODB_DB
         value: mir_travel_db
       - key: FRONTEND_URL
-        sync: false
+        value: "https://mir-travel-and-tourism.onrender.com"
       - key: CORS_ORIGINS
-        value: "https://mir-travel-frontend.onrender.com"
+        value: "https://mir-travel-and-tourism.onrender.com,http://localhost:5173"
       - key: ADMIN_BOOTSTRAP_EMAIL
         value: admin@mirtravel.es
       - key: ADMIN_BOOTSTRAP_PASSWORD
@@ -38,4 +38,4 @@ services:
         destination: "/index.html"
     envVars:
       - key: VITE_API_BASE_URL
-        value: "https://mir-travel-backend.onrender.com/api/v1"
+        value: "https://backend-hurm.onrender.com/api/v1"
